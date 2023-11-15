@@ -4,7 +4,9 @@
   "description": "Crud using typescript,aws,lambda,dynamodb",
   "author": "Lucas de Oliveira Santos",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "unit": "jest",
+    "compile": "tsc",
+    "test": "npm run compile && npm run unit"
   },
   "keywords": [],
   "license": "ISC",
@@ -12,12 +14,17 @@
     "@aws-sdk/client-dynamodb": "^3.18.0",
     "@aws-sdk/util-dynamodb": "^3.18.0",
     "@types/aws-lambda": "^8.10.126",
+    "jest": "^29.2.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.0",
     "@types/node": "^20.9.0",
+    "jest": "^29.2.1",
     "serverless-iam-roles-per-function": "^3.2.0",
     "serverless-plugin-typescript": "^2.1.5",
+    "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }
 }
