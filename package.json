@@ -1,0 +1,22 @@
+{
+  "name": "typescript-aws-lambda-dynamo",
+  "version": "1.0.0",
+  "description": "Crud using typescript,aws,lambda,dynamodb",
+  "author":"Lucas de Oliveira Santos",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.18.0",
+    "@aws-sdk/util-dynamodb": "^3.18.0",
+    "@types/aws-lambda": "^8.10.126"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "serverless-iam-roles-per-function": "^3.2.0",
+    "serverless-plugin-typescript": "^2.1.5",
+    "typescript": "^5.2.2"
+  }
+}

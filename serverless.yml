@@ -1,0 +1,48 @@
+service: typescript-aws-lambda-dynamo
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: test
+  region: sa-east-1
+  environment:
+    DYNAMODB_CLIENT_TABLE: ${self:custom.clientsTableName}
+
+custom:
+  clientsTableName: clients-table-${self:provider.stage}
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-iam-roles-per-function
+
+functions:
+  getAllClients:
+    handler: src/functions/ClientFunctions.findAll
+    name: get-all-clients
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: clients
+          method: GET
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:Scan"
+        Resource: !GetAtt ClientsTable.Arn
+
+resources:
+  Resources:
+    ClientsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.clientsTableName}
+        AttributeDefinitions:
+          - AttributeName: clientId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: clientId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
