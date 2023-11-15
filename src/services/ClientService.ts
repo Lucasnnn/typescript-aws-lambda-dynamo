@@ -17,7 +17,6 @@ export class ClientService {
   }
 
   create(body: Client): Promise<Client> {
-    console.log("service");
     return this.DB.insert(body);
   }
 

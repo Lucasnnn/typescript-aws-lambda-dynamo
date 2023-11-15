@@ -44,8 +44,6 @@ export class ClientFunctions {
         message: "Successfully retrieved all clients !",
         data: Items,
       });
-
-      console.log(response.body);
     } catch (e) {
       console.error(e);
 

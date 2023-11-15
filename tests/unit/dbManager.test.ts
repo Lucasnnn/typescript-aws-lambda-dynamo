@@ -4,10 +4,9 @@ import { DBManager } from "../../src/utils/DBManager";
 describe("DBManager", () => {
   let dbManager: DBManager;
   let insertedClients: any[];
-  const tableName = "client-table-dev";
 
   beforeAll(async () => {
-    dbManager = new DBManager(tableName);
+    dbManager = new DBManager(process.env.DYNAMODB_CLIENT_TABLE!);
 
     insertedClients = await dbManager.insertAll(mocks);
   });
