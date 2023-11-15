@@ -31,6 +31,21 @@ functions:
           - "dynamodb:Scan"
         Resource: !GetAtt ClientsTable.Arn
 
+  createClient:
+    handler: src/functions/ClientFunctions.create
+    name: create-client
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: client
+          method: POST
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:PutItem"
+        Resource: !GetAtt ClientsTable.Arn
+
 resources:
   Resources:
     ClientsTable:
@@ -38,10 +53,10 @@ resources:
       Properties:
         TableName: ${self:custom.clientsTableName}
         AttributeDefinitions:
-          - AttributeName: clientId
+          - AttributeName: id
             AttributeType: S
         KeySchema:
-          - AttributeName: clientId
+          - AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1

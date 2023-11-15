@@ -1,4 +1,5 @@
 export class Client {
+  id?: string;
   fullName?: string;
   dateOfBirth?: string;
   isActive?: boolean;
@@ -6,12 +7,14 @@ export class Client {
   contacts?: Contact[];
 
   constructor(
+    id?: string,
     fullName?: string,
     dateOfBirth?: string,
     isActive?: boolean,
     addresses?: string[],
     contacts?: Contact[]
   ) {
+    this.id = id;
     this.fullName = fullName;
     this.dateOfBirth = dateOfBirth;
     this.isActive = isActive;

@@ -77,6 +77,12 @@
         "LogGroupName": "/aws/lambda/get-all-clients"
       }
     },
+    "CreateClientLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/create-client"
+      }
+    },
     "IamRoleLambdaExecution": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -121,6 +127,9 @@
                   "Resource": [
                     {
                       "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/get-all-clients:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/create-client:*"
                     }
                   ]
                 },
@@ -132,6 +141,9 @@
                   "Resource": [
                     {
                       "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/get-all-clients:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/create-client:*:*"
                     }
                   ]
                 }
@@ -162,7 +174,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700014454007-2023-11-15T02:14:14.007Z/typescript-aws-lambda-dynamo.zip"
+          "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700018448967-2023-11-15T03:20:48.967Z/typescript-aws-lambda-dynamo.zip"
         },
         "Handler": "src/functions/ClientFunctions.findAll",
         "Runtime": "nodejs16.x",
@@ -186,14 +198,55 @@
         "GetAllClientsLogGroup"
       ]
     },
-    "GetAllClientsLambdaVersionoK3wDVowI96aE439G9QMf929yPTIUhU9hxh8EqZoQk4": {
+    "CreateClientLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700018448967-2023-11-15T03:20:48.967Z/typescript-aws-lambda-dynamo.zip"
+        },
+        "Handler": "src/functions/ClientFunctions.create",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "create-client",
+        "MemorySize": 128,
+        "Timeout": 5,
+        "Environment": {
+          "Variables": {
+            "DYNAMODB_CLIENT_TABLE": "clients-table-test"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "CreateClientIamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "CreateClientIamRoleLambdaExecution",
+        "CreateClientLogGroup"
+      ]
+    },
+    "GetAllClientsLambdaVersionW9SkEzasC2qREz1BKWMtNTwCnXWuvalsgsqZOUi5Ls": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetAllClientsLambdaFunction"
         },
-        "CodeSha256": "ZVRwacDLr1EakmO1GxcSH+jF5C65OcpMD2/L/vTZXDM="
+        "CodeSha256": "ZwV/50l42fwtyjd/WEUDu92oI7NP7JmFRS8nSo28jIU="
+      }
+    },
+    "CreateClientLambdaVersionlKPbka2uXG7nBzk9FHTMnweTzWt88SQIxXt3HOsAmQ": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CreateClientLambdaFunction"
+        },
+        "CodeSha256": "ZwV/50l42fwtyjd/WEUDu92oI7NP7JmFRS8nSo28jIU="
       }
     },
     "ApiGatewayRestApi": {
@@ -218,6 +271,21 @@
           ]
         },
         "PathPart": "clients",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceClient": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "client",
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -269,7 +337,53 @@
         "GetAllClientsLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1700014405455": {
+    "ApiGatewayMethodClientPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceClient"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "CreateClientLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "CreateClientLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayDeployment1700018409355": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -278,7 +392,8 @@
         "StageName": "test"
       },
       "DependsOn": [
-        "ApiGatewayMethodClientsGet"
+        "ApiGatewayMethodClientsGet",
+        "ApiGatewayMethodClientPost"
       ]
     },
     "GetAllClientsLambdaPermissionApiGateway": {
@@ -287,6 +402,43 @@
         "FunctionName": {
           "Fn::GetAtt": [
             "GetAllClientsLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "CreateClientLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CreateClientLambdaFunction",
             "Arn"
           ]
         },
@@ -398,19 +550,99 @@
         "ManagedPolicyArns": []
       }
     },
+    "CreateClientIamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "typescript-aws-lambda-dynamo",
+                  "test",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/create-client:*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "ClientsTable",
+                      "Arn"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "typescript-aws-lambda-dynamo",
+              "test",
+              "createClient",
+              {
+                "Ref": "AWS::Region"
+              }
+            ]
+          ]
+        },
+        "ManagedPolicyArns": []
+      }
+    },
     "ClientsTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "TableName": "clients-table-test",
         "AttributeDefinitions": [
           {
-            "AttributeName": "clientId",
+            "AttributeName": "id",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "clientId",
+            "AttributeName": "id",
             "KeyType": "HASH"
           }
         ],
@@ -433,10 +665,19 @@
     "GetAllClientsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetAllClientsLambdaVersionoK3wDVowI96aE439G9QMf929yPTIUhU9hxh8EqZoQk4"
+        "Ref": "GetAllClientsLambdaVersionW9SkEzasC2qREz1BKWMtNTwCnXWuvalsgsqZOUi5Ls"
       },
       "Export": {
         "Name": "sls-typescript-aws-lambda-dynamo-test-GetAllClientsLambdaFunctionQualifiedArn"
+      }
+    },
+    "CreateClientLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "CreateClientLambdaVersionlKPbka2uXG7nBzk9FHTMnweTzWt88SQIxXt3HOsAmQ"
+      },
+      "Export": {
+        "Name": "sls-typescript-aws-lambda-dynamo-test-CreateClientLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {

@@ -2,7 +2,7 @@
   "name": "typescript-aws-lambda-dynamo",
   "version": "1.0.0",
   "description": "Crud using typescript,aws,lambda,dynamodb",
-  "author":"Lucas de Oliveira Santos",
+  "author": "Lucas de Oliveira Santos",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +11,8 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.18.0",
     "@aws-sdk/util-dynamodb": "^3.18.0",
-    "@types/aws-lambda": "^8.10.126"
+    "@types/aws-lambda": "^8.10.126",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",

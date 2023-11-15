@@ -8,7 +8,11 @@ export class ClientService {
     this.DB = new DBManager(process.env.DYNAMODB_CLIENT_TABLE!, new Client());
   }
 
-  async findAll(): Promise<Client[]> {
+  findAll(): Promise<Client[]> {
     return this.DB.getAll();
+  }
+
+  create(body: Client): Promise<Client> {
+    return this.DB.addItem(body);
   }
 }

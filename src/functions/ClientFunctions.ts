@@ -14,7 +14,6 @@ class ClientFunctions {
       response.body = JSON.stringify({
         message: "Successfully retrieved all clients !",
         data: Items,
-        Items,
       });
     } catch (e) {
       console.error(e);
@@ -30,7 +29,34 @@ class ClientFunctions {
 
     return response;
   };
+
+  create = async (event): Promise<APIGatewayProxyResult> => {
+    const response: APIGatewayProxyResult = { statusCode: 200, body: "" };
+
+    try {
+      const body = JSON.parse(event.body);
+
+      const createResult = await this._service.create(body || {});
+
+      response.body = JSON.stringify({
+        message: "Successfully created client.",
+        data: createResult,
+      });
+    } catch (e) {
+      console.error(e);
+      response.statusCode = 500;
+      response.body = JSON.stringify({
+        message: "Failed to create client.",
+        errorMsg: e.message,
+        errorStack: e.stack,
+      });
+    }
+
+    return response;
+  };
 }
 
-export const funcs = new ClientFunctions(new ClientService());
+const funcs = new ClientFunctions(new ClientService());
+
+export const create = funcs.create;
 export const findAll = funcs.findAll;

@@ -7,6 +7,8 @@ import {
   ScanCommandOutput,
   ScanCommand,
 } from "@aws-sdk/client-dynamodb";
+import { v4 as uuidv4 } from "uuid";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
 export class DBManager<T> {
   private classType: T;
@@ -19,7 +21,11 @@ export class DBManager<T> {
     this.client = new DynamoDBClient({});
   }
 
-  async getAll(): Promise<T[]> {
+  async getAll(): Promise<
+    {
+      [key: string]: any;
+    }[]
+  > {
     const params = {
       TableName: this.tableName,
     };
@@ -29,29 +35,30 @@ export class DBManager<T> {
     );
 
     if (Items && Items?.length) {
-      return Items.map((item: any) => {
-        const instance = this.classType;
+      const result = Items?.map((item) => {
+        return unmarshall(item);
+      })?.filter((fil) => fil);
 
-        for (const key in item) {
-          if (item.hasOwnProperty(key)) {
-            instance[key] = item[key];
-          }
-        }
-
-        return instance;
-      });
+      return result;
     }
 
     return [];
   }
 
-  async addItem(item: Record<string, any>): Promise<void> {
+  async addItem(item: Record<string, any>): Promise<Record<string, any>> {
+    const newItem = {
+      ...item,
+      id: uuidv4(),
+    };
+
     const params = {
+      Item: marshall(newItem),
       TableName: this.tableName,
-      Item: item,
     };
 
     await this.client.send(new PutItemCommand(params));
+
+    return params.Item;
   }
 
   async getItem(key: Record<string, any>): Promise<Record<string, any> | null> {
