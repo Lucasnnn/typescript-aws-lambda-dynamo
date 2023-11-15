@@ -104,6 +104,12 @@
               "LogGroupName": "/aws/lambda/get-client-by-id"
             }
           },
+          "UpdateClientLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/update-client"
+            }
+          },
           "DeleteClientLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
@@ -162,6 +168,9 @@
                             "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/get-client-by-id:*"
                           },
                           {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/update-client:*"
+                          },
+                          {
                             "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/delete-client:*"
                           }
                         ]
@@ -180,6 +189,9 @@
                           },
                           {
                             "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/get-client-by-id:*:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/update-client:*:*"
                           },
                           {
                             "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/delete-client:*:*"
@@ -213,7 +225,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700023113188-2023-11-15T04:38:33.188Z/typescript-aws-lambda-dynamo.zip"
+                "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700024152403-2023-11-15T04:55:52.403Z/typescript-aws-lambda-dynamo.zip"
               },
               "Handler": "src/functions/ClientFunctions.create",
               "Runtime": "nodejs16.x",
@@ -244,7 +256,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700023113188-2023-11-15T04:38:33.188Z/typescript-aws-lambda-dynamo.zip"
+                "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700024152403-2023-11-15T04:55:52.403Z/typescript-aws-lambda-dynamo.zip"
               },
               "Handler": "src/functions/ClientFunctions.findAll",
               "Runtime": "nodejs16.x",
@@ -275,7 +287,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700023113188-2023-11-15T04:38:33.188Z/typescript-aws-lambda-dynamo.zip"
+                "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700024152403-2023-11-15T04:55:52.403Z/typescript-aws-lambda-dynamo.zip"
               },
               "Handler": "src/functions/ClientFunctions.findById",
               "Runtime": "nodejs16.x",
@@ -299,6 +311,37 @@
               "GetClientByIdLogGroup"
             ]
           },
+          "UpdateClientLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700024152403-2023-11-15T04:55:52.403Z/typescript-aws-lambda-dynamo.zip"
+              },
+              "Handler": "src/functions/ClientFunctions.update",
+              "Runtime": "nodejs16.x",
+              "FunctionName": "update-client",
+              "MemorySize": 128,
+              "Timeout": 5,
+              "Environment": {
+                "Variables": {
+                  "DYNAMODB_CLIENT_TABLE": "clients-table-test"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "UpdateClientIamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "UpdateClientIamRoleLambdaExecution",
+              "UpdateClientLogGroup"
+            ]
+          },
           "DeleteClientLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
@@ -306,7 +349,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700023113188-2023-11-15T04:38:33.188Z/typescript-aws-lambda-dynamo.zip"
+                "S3Key": "serverless/typescript-aws-lambda-dynamo/test/1700024152403-2023-11-15T04:55:52.403Z/typescript-aws-lambda-dynamo.zip"
               },
               "Handler": "src/functions/ClientFunctions.deleteById",
               "Runtime": "nodejs16.x",
@@ -330,44 +373,54 @@
               "DeleteClientLogGroup"
             ]
           },
-          "CreateClientLambdaVersionLjJsNzqAedUeVV3rJaPe5cHhcLOPMuCHyxzM1ffTU8": {
+          "CreateClientLambdaVersiono6I1gbdUWXex0VVVMV3Y3Ro1GH3UcH0ZlrU3dR3U": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CreateClientLambdaFunction"
               },
-              "CodeSha256": "WxJ++tvIyKTgbMT82Sw8mwCia7khe3qHKr5Q8vW503A="
+              "CodeSha256": "nM2ZqGaIQWcXiA6EoKLTAd1TzIKVycz9Pf5Ua7lKYfo="
             }
           },
-          "GetAllClientsLambdaVersion70nw8T8aITfzYqdYW3J7sqRgmFq8kNWxHHvXkVzcFc": {
+          "GetAllClientsLambdaVersionLiMHCy7utISLrAOgX8AABujw8AG5iSj2mhPy4VcV8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetAllClientsLambdaFunction"
               },
-              "CodeSha256": "WxJ++tvIyKTgbMT82Sw8mwCia7khe3qHKr5Q8vW503A="
+              "CodeSha256": "nM2ZqGaIQWcXiA6EoKLTAd1TzIKVycz9Pf5Ua7lKYfo="
             }
           },
-          "GetClientByIdLambdaVersionQnwgHDI3kFUzOc5TvSvUN3pcOdEy93nXflbjdaw8": {
+          "GetClientByIdLambdaVersion2FnWTPv0uPjb8pQArgOQ22ibeI2nvtZDjyL0oTSN34": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetClientByIdLambdaFunction"
               },
-              "CodeSha256": "WxJ++tvIyKTgbMT82Sw8mwCia7khe3qHKr5Q8vW503A="
+              "CodeSha256": "nM2ZqGaIQWcXiA6EoKLTAd1TzIKVycz9Pf5Ua7lKYfo="
             }
           },
-          "DeleteClientLambdaVersion0R1xxdOdvexgoGoalv5mY8UA2CnChWV2nJT0aCOjR3w": {
+          "UpdateClientLambdaVersionokQENvnKdEzp8woaqK2m1juKyxTFMENUe3CAnP1mgE": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UpdateClientLambdaFunction"
+              },
+              "CodeSha256": "nM2ZqGaIQWcXiA6EoKLTAd1TzIKVycz9Pf5Ua7lKYfo="
+            }
+          },
+          "DeleteClientLambdaVersionYDVwDI4LhQ0WCpMdnxLwqLSiDGkOYuDpF3LLjFAA": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "DeleteClientLambdaFunction"
               },
-              "CodeSha256": "WxJ++tvIyKTgbMT82Sw8mwCia7khe3qHKr5Q8vW503A="
+              "CodeSha256": "nM2ZqGaIQWcXiA6EoKLTAd1TzIKVycz9Pf5Ua7lKYfo="
             }
           },
           "ApiGatewayRestApi": {
@@ -562,6 +615,52 @@
               "GetClientByIdLambdaPermissionApiGateway"
             ]
           },
+          "ApiGatewayMethodClientIdVarPut": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "PUT",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceClientIdVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "UpdateClientLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "UpdateClientLambdaPermissionApiGateway"
+            ]
+          },
           "ApiGatewayMethodClientIdVarDelete": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
@@ -608,7 +707,7 @@
               "DeleteClientLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1700023072086": {
+          "ApiGatewayDeployment1700024107656": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -620,6 +719,7 @@
               "ApiGatewayMethodClientPost",
               "ApiGatewayMethodClientsGet",
               "ApiGatewayMethodClientIdVarGet",
+              "ApiGatewayMethodClientIdVarPut",
               "ApiGatewayMethodClientIdVarDelete"
             ]
           },
@@ -703,6 +803,43 @@
               "FunctionName": {
                 "Fn::GetAtt": [
                   "GetClientByIdLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "UpdateClientLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "UpdateClientLambdaFunction",
                   "Arn"
                 ]
               },
@@ -1011,6 +1148,86 @@
               "ManagedPolicyArns": []
             }
           },
+          "UpdateClientIamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "typescript-aws-lambda-dynamo",
+                        "test",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/update-client:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:UpdateItem"
+                        ],
+                        "Resource": {
+                          "Fn::GetAtt": [
+                            "ClientsTable",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "typescript-aws-lambda-dynamo",
+                    "test",
+                    "updateClient",
+                    {
+                      "Ref": "AWS::Region"
+                    }
+                  ]
+                ]
+              },
+              "ManagedPolicyArns": []
+            }
+          },
           "DeleteClientIamRoleLambdaExecution": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -1126,7 +1343,7 @@
           "CreateClientLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CreateClientLambdaVersionLjJsNzqAedUeVV3rJaPe5cHhcLOPMuCHyxzM1ffTU8"
+              "Ref": "CreateClientLambdaVersiono6I1gbdUWXex0VVVMV3Y3Ro1GH3UcH0ZlrU3dR3U"
             },
             "Export": {
               "Name": "sls-typescript-aws-lambda-dynamo-test-CreateClientLambdaFunctionQualifiedArn"
@@ -1135,7 +1352,7 @@
           "GetAllClientsLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetAllClientsLambdaVersion70nw8T8aITfzYqdYW3J7sqRgmFq8kNWxHHvXkVzcFc"
+              "Ref": "GetAllClientsLambdaVersionLiMHCy7utISLrAOgX8AABujw8AG5iSj2mhPy4VcV8"
             },
             "Export": {
               "Name": "sls-typescript-aws-lambda-dynamo-test-GetAllClientsLambdaFunctionQualifiedArn"
@@ -1144,16 +1361,25 @@
           "GetClientByIdLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetClientByIdLambdaVersionQnwgHDI3kFUzOc5TvSvUN3pcOdEy93nXflbjdaw8"
+              "Ref": "GetClientByIdLambdaVersion2FnWTPv0uPjb8pQArgOQ22ibeI2nvtZDjyL0oTSN34"
             },
             "Export": {
               "Name": "sls-typescript-aws-lambda-dynamo-test-GetClientByIdLambdaFunctionQualifiedArn"
             }
           },
+          "UpdateClientLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UpdateClientLambdaVersionokQENvnKdEzp8woaqK2m1juKyxTFMENUe3CAnP1mgE"
+            },
+            "Export": {
+              "Name": "sls-typescript-aws-lambda-dynamo-test-UpdateClientLambdaFunctionQualifiedArn"
+            }
+          },
           "DeleteClientLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "DeleteClientLambdaVersion0R1xxdOdvexgoGoalv5mY8UA2CnChWV2nJT0aCOjR3w"
+              "Ref": "DeleteClientLambdaVersionYDVwDI4LhQ0WCpMdnxLwqLSiDGkOYuDpF3LLjFAA"
             },
             "Export": {
               "Name": "sls-typescript-aws-lambda-dynamo-test-DeleteClientLambdaFunctionQualifiedArn"
@@ -1309,7 +1535,7 @@
         "memory": 128,
         "runtime": "nodejs16.x",
         "vpc": {},
-        "versionLogicalId": "CreateClientLambdaVersionLjJsNzqAedUeVV3rJaPe5cHhcLOPMuCHyxzM1ffTU8"
+        "versionLogicalId": "CreateClientLambdaVersiono6I1gbdUWXex0VVVMV3Y3Ro1GH3UcH0ZlrU3dR3U"
       },
       "getAllClients": {
         "handler": "src/functions/ClientFunctions.findAll",
@@ -1340,7 +1566,7 @@
         "memory": 128,
         "runtime": "nodejs16.x",
         "vpc": {},
-        "versionLogicalId": "GetAllClientsLambdaVersion70nw8T8aITfzYqdYW3J7sqRgmFq8kNWxHHvXkVzcFc"
+        "versionLogicalId": "GetAllClientsLambdaVersionLiMHCy7utISLrAOgX8AABujw8AG5iSj2mhPy4VcV8"
       },
       "getClientById": {
         "handler": "src/functions/ClientFunctions.findById",
@@ -1371,7 +1597,38 @@
         "memory": 128,
         "runtime": "nodejs16.x",
         "vpc": {},
-        "versionLogicalId": "GetClientByIdLambdaVersionQnwgHDI3kFUzOc5TvSvUN3pcOdEy93nXflbjdaw8"
+        "versionLogicalId": "GetClientByIdLambdaVersion2FnWTPv0uPjb8pQArgOQ22ibeI2nvtZDjyL0oTSN34"
+      },
+      "updateClient": {
+        "handler": "src/functions/ClientFunctions.update",
+        "name": "update-client",
+        "memorySize": 128,
+        "timeout": 5,
+        "events": [
+          {
+            "http": {
+              "path": "client/{id}",
+              "method": "put",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "iamRoleStatements": [
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"UpdateClientIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][1]"
+          }
+        ],
+        "package": {
+          "exclude": [
+            "node_modules/serverless-plugin-typescript"
+          ],
+          "include": [],
+          "patterns": []
+        },
+        "memory": 128,
+        "runtime": "nodejs16.x",
+        "vpc": {},
+        "versionLogicalId": "UpdateClientLambdaVersionokQENvnKdEzp8woaqK2m1juKyxTFMENUe3CAnP1mgE"
       },
       "deleteClient": {
         "handler": "src/functions/ClientFunctions.deleteById",
@@ -1402,7 +1659,7 @@
         "memory": 128,
         "runtime": "nodejs16.x",
         "vpc": {},
-        "versionLogicalId": "DeleteClientLambdaVersion0R1xxdOdvexgoGoalv5mY8UA2CnChWV2nJT0aCOjR3w"
+        "versionLogicalId": "DeleteClientLambdaVersionYDVwDI4LhQ0WCpMdnxLwqLSiDGkOYuDpF3LLjFAA"
       }
     },
     "resources": {
@@ -1457,7 +1714,7 @@
     "artifact": "C:\\Users\\oluca\\Documents\\personal\\typescript-aws-lambda-dynamo\\.build\\.serverless\\typescript-aws-lambda-dynamo.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/typescript-aws-lambda-dynamo/test/1700023113188-2023-11-15T04:38:33.188Z",
+    "artifactDirectoryName": "serverless/typescript-aws-lambda-dynamo/test/1700024152403-2023-11-15T04:55:52.403Z",
     "artifact": "typescript-aws-lambda-dynamo.zip"
   }
 }

@@ -5,12 +5,12 @@ import { ClientService } from "../services/ClientService";
 class ClientFunctions {
   constructor(private readonly _service: ClientService) {}
 
-  private initiResp() {
+  private initiResp(): APIGatewayProxyResult {
     return { statusCode: 200, body: "" };
   }
 
   create = async (event): Promise<APIGatewayProxyResult> => {
-    const response: APIGatewayProxyResult = this.initiResp();
+    const response = this.initiResp();
 
     try {
       const body = JSON.parse(event.body);
@@ -35,7 +35,7 @@ class ClientFunctions {
   };
 
   findAll = async (): Promise<APIGatewayProxyResult> => {
-    const response: APIGatewayProxyResult = this.initiResp();
+    const response = this.initiResp();
 
     try {
       const Items: Client[] = await this._service.findAll();
@@ -91,6 +91,32 @@ class ClientFunctions {
     return response;
   };
 
+  update = async (event): Promise<APIGatewayProxyResult> => {
+    const response = this.initiResp();
+    const id = event.pathParameters.id;
+
+    try {
+      const body = JSON.parse(event.body);
+
+      const updated = await this._service.update(id, body);
+
+      response.body = JSON.stringify({
+        message: "Successfully client updated.",
+        data: updated,
+      });
+    } catch (e) {
+      console.error(e);
+      response.statusCode = 500;
+      response.body = JSON.stringify({
+        message: "Failed to client updated.",
+        errorMsg: e.message,
+        errorStack: e.stack,
+      });
+    }
+
+    return response;
+  };
+
   deleteById = async (event): Promise<APIGatewayProxyResult> => {
     const response = this.initiResp();
     const id = event.pathParameters.id;
@@ -119,6 +145,7 @@ class ClientFunctions {
 const funcs = new ClientFunctions(new ClientService());
 
 export const create = funcs.create;
+export const update = funcs.update;
 export const findAll = funcs.findAll;
 export const findById = funcs.findById;
 export const deleteById = funcs.deleteById;

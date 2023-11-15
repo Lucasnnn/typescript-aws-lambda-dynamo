@@ -78,4 +78,36 @@ export class DBManager {
 
     await this.client.send(new DeleteItemCommand(params));
   }
+
+  async update(id: string, body: any) {
+    const objKeys = Object.keys(body);
+
+    const params = {
+      Key: marshall({ id }),
+      TableName: this.tableName,
+      UpdateExpression: `SET ${objKeys
+        .map((_, index) => `#key${index} = :value${index}`)
+        .join(", ")}`,
+      ExpressionAttributeNames: objKeys.reduce(
+        (acc, key, index) => ({
+          ...acc,
+          [`#key${index}`]: key,
+        }),
+        {}
+      ),
+      ExpressionAttributeValues: marshall(
+        objKeys.reduce(
+          (acc, key, index) => ({
+            ...acc,
+            [`:value${index}`]: body[key],
+          }),
+          {}
+        )
+      ),
+    };
+
+    await this.client.send(new UpdateItemCommand(params));
+
+    return body;
+  }
 }

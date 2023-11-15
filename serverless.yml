@@ -61,6 +61,21 @@ functions:
           - "dynamodb:GetItem"
         Resource: !GetAtt ClientsTable.Arn
 
+  updateClient:
+    handler: src/functions/ClientFunctions.update
+    name: update-client
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: client/{id}
+          method: PUT
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:UpdateItem"
+        Resource: !GetAtt ClientsTable.Arn
+
   deleteClient:
     handler: src/functions/ClientFunctions.deleteById
     name: delete-client

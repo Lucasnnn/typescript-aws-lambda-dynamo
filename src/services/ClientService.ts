@@ -20,7 +20,11 @@ export class ClientService {
     return this.DB.addItem(body);
   }
 
-  async delete(id: string): Promise<void> {
-    await this.DB.deleteItem(id);
+  update(id: string, body: Client): Promise<Client> {
+    return this.DB.update(id, body);
+  }
+
+  delete(id: string): Promise<void> {
+    return this.DB.deleteItem(id);
   }
 }
