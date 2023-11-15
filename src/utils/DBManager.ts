@@ -6,6 +6,7 @@ import {
   UpdateItemCommand,
   ScanCommandOutput,
   ScanCommand,
+  DynamoDBClientConfig,
 } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
@@ -14,9 +15,13 @@ export class DBManager {
   private readonly tableName: string;
   private readonly client: DynamoDBClient;
 
-  constructor(tableName: string) {
+  constructor(tableName: string, tester?: DynamoDBClientConfig) {
     this.tableName = tableName;
     this.client = new DynamoDBClient({});
+
+    if (tester) {
+      this.client = new DynamoDBClient(tester);
+    }
   }
 
   async getAll(): Promise<
@@ -38,12 +43,25 @@ export class DBManager {
       })?.filter((fil) => fil);
 
       return result;
+    } else {
+      return [];
     }
-
-    return [];
   }
 
-  async addItem(item: Record<string, any>): Promise<Record<string, any>> {
+  async insertAll(items: Record<string, any>[]) {
+    const insertPromises: Promise<any>[] = [];
+
+    for (let item of items) {
+      const insertPromise = this.insert(item);
+      insertPromises.push(insertPromise);
+    }
+
+    await Promise.all(insertPromises);
+
+    return this.getAll();
+  }
+
+  async insert(item: Record<string, any>): Promise<Record<string, any>> {
     const newItem = {
       ...item,
       id: uuidv4(),
@@ -56,7 +74,7 @@ export class DBManager {
 
     await this.client.send(new PutItemCommand(params));
 
-    return params.Item;
+    return newItem;
   }
 
   async getById(id: string): Promise<any | null> {
@@ -107,6 +125,7 @@ export class DBManager {
     };
 
     await this.client.send(new UpdateItemCommand(params));
+    body.id = id;
 
     return body;
   }

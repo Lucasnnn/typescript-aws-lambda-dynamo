@@ -6,5 +6,6 @@ export default {
   collectCoverage: true,
   coverageDirectory: "coverage",
   coverageProvider: "v8",
-  testMatch: ["**/tests/unit/*.test.ts"],
+  preset: "@shelf/jest-dynamodb",
+  testMatch: ["**/unit/*.test.ts"],
 };
