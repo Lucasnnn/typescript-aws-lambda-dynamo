@@ -16,6 +16,21 @@ plugins:
   - serverless-iam-roles-per-function
 
 functions:
+  createClient:
+    handler: src/functions/ClientFunctions.create
+    name: create-client
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: client
+          method: POST
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:PutItem"
+        Resource: !GetAtt ClientsTable.Arn
+
   getAllClients:
     handler: src/functions/ClientFunctions.findAll
     name: get-all-clients
@@ -31,19 +46,34 @@ functions:
           - "dynamodb:Scan"
         Resource: !GetAtt ClientsTable.Arn
 
-  createClient:
-    handler: src/functions/ClientFunctions.create
-    name: create-client
+  getClientById:
+    handler: src/functions/ClientFunctions.findById
+    name: get-client-by-id
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: client
-          method: POST
+          path: client/{id}
+          method: GET
     iamRoleStatements:
       - Effect: "Allow"
         Action:
-          - "dynamodb:PutItem"
+          - "dynamodb:GetItem"
+        Resource: !GetAtt ClientsTable.Arn
+
+  deleteClient:
+    handler: src/functions/ClientFunctions.deleteById
+    name: delete-client
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: client/{id}
+          method: DELETE
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:DeleteItem"
         Resource: !GetAtt ClientsTable.Arn
 
 resources:

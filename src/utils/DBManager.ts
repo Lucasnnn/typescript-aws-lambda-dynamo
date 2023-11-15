@@ -10,14 +10,12 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
-export class DBManager<T> {
-  private classType: T;
+export class DBManager {
   private readonly tableName: string;
   private readonly client: DynamoDBClient;
 
-  constructor(tableName: string, classType: T) {
+  constructor(tableName: string) {
     this.tableName = tableName;
-    this.classType = classType;
     this.client = new DynamoDBClient({});
   }
 
@@ -61,38 +59,23 @@ export class DBManager<T> {
     return params.Item;
   }
 
-  async getItem(key: Record<string, any>): Promise<Record<string, any> | null> {
+  async getById(id: string): Promise<any | null> {
     const params = {
+      Key: marshall({ id }),
       TableName: this.tableName,
-      Key: key,
     };
 
     const { Item } = await this.client.send(new GetItemCommand(params));
 
-    return Item ? Item : null;
+    return Item ? unmarshall(Item) : null;
   }
 
-  async deleteItem(key: Record<string, any>): Promise<void> {
+  async deleteItem(id: string): Promise<void> {
     const params = {
+      Key: marshall({ id }),
       TableName: this.tableName,
-      Key: key,
     };
 
     await this.client.send(new DeleteItemCommand(params));
-  }
-
-  async updateItem(
-    key: Record<string, any>,
-    updateExpression: string,
-    expressionAttributeValues: Record<string, any>
-  ): Promise<void> {
-    const params = {
-      TableName: this.tableName,
-      Key: key,
-      UpdateExpression: updateExpression,
-      ExpressionAttributeValues: expressionAttributeValues,
-    };
-
-    await this.client.send(new UpdateItemCommand(params));
   }
 }

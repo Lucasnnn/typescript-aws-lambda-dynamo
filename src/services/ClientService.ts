@@ -2,17 +2,25 @@ import { Client } from "../models/client";
 import { DBManager } from "../utils/DBManager";
 
 export class ClientService {
-  private readonly DB: DBManager<Client>;
+  private readonly DB: DBManager;
 
   constructor() {
-    this.DB = new DBManager(process.env.DYNAMODB_CLIENT_TABLE!, new Client());
+    this.DB = new DBManager(process.env.DYNAMODB_CLIENT_TABLE!);
   }
 
   findAll(): Promise<Client[]> {
     return this.DB.getAll();
   }
 
+  findById(id: string): Promise<Client> {
+    return this.DB.getById(id);
+  }
+
   create(body: Client): Promise<Client> {
     return this.DB.addItem(body);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.DB.deleteItem(id);
   }
 }
