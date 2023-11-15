@@ -8,4 +8,5 @@ export default {
   coverageProvider: "v8",
   preset: "@shelf/jest-dynamodb",
   testMatch: ["**/unit/*.test.ts"],
+  setupFiles: ["<rootDir>/testSetup.js"],
 };

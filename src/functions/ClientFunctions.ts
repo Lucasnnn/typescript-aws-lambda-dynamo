@@ -2,7 +2,7 @@ import { Client } from "../models/client";
 import { APIGatewayProxyResult } from "aws-lambda";
 import { ClientService } from "../services/ClientService";
 
-class ClientFunctions {
+export class ClientFunctions {
   constructor(private readonly _service: ClientService) {}
 
   private initiResp(): APIGatewayProxyResult {
@@ -44,6 +44,8 @@ class ClientFunctions {
         message: "Successfully retrieved all clients !",
         data: Items,
       });
+
+      console.log(response.body);
     } catch (e) {
       console.error(e);
 

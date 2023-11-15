@@ -1,24 +1,13 @@
 import { mocks } from "./clientsMock";
 import { DBManager } from "../../src/utils/DBManager";
-import { DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 
 describe("DBManager", () => {
   let dbManager: DBManager;
   let insertedClients: any[];
   const tableName = "client-table-dev";
 
-  const config: DynamoDBClientConfig = {
-    region: "sa-east-1",
-    credentials: {
-      accessKeyId: "fakeMyKeyId",
-      secretAccessKey: "fakeSecretAccessKey",
-    },
-    endpoint: "http://localhost:8000",
-    tls: false,
-  };
-
   beforeAll(async () => {
-    dbManager = new DBManager(tableName, config);
+    dbManager = new DBManager(tableName);
 
     insertedClients = await dbManager.insertAll(mocks);
   });

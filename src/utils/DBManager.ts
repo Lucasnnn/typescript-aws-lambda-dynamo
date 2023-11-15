@@ -15,12 +15,20 @@ export class DBManager {
   private readonly tableName: string;
   private readonly client: DynamoDBClient;
 
-  constructor(tableName: string, tester?: DynamoDBClientConfig) {
+  constructor(tableName: string) {
     this.tableName = tableName;
     this.client = new DynamoDBClient({});
 
-    if (tester) {
-      this.client = new DynamoDBClient(tester);
+    if (!process.env.PROD) {
+      this.client = new DynamoDBClient({
+        region: "sa-east-1",
+        credentials: {
+          accessKeyId: "fakeMyKeyId",
+          secretAccessKey: "fakeSecretAccessKey",
+        },
+        endpoint: "http://localhost:8000",
+        tls: false,
+      });
     }
   }
 
